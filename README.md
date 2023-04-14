@@ -1,6 +1,6 @@
 ## Requirements
-- Python 3.6
-- Django 3.1
+- Python 3.8.10
+- Django 4.2
 - Django REST Framework
 
 ## Installation
@@ -17,46 +17,15 @@ You can install all the required dependencies by running
 pip install -r requirements.txt
 ```
 
-## Structure
-In a RESTful API, endpoints (URLs) define the structure of the API and how end users access data from our application using the HTTP methods - GET, POST, PUT, DELETE. Endpoints should be logically organized around _collections_ and _elements_, both of which are resources.
-
-In our case, we have one single resource, `movies`, so we will use the following URLS - `/movies/` and `/movies/<id>` for collections and elements, respectively:
-
-Endpoint |HTTP Method | CRUD Method | Result
--- | -- |-- |--
-`movies` | GET | READ | Get all movies
-`movies/:id` | GET | READ | Get a single movie
-`movies`| POST | CREATE | Create a new movie
-`movies/:id` | PUT | UPDATE | Update a movie
-`movies/:id` | DELETE | DELETE | Delete a movie
-
 ## Start and Use
 Run migration
 ```
 python manage.py makemigrations
 python manage.py migrate
 ```
-First, we have to start up Django's development server.
+Run server.
 ```
 python manage.py runserver
-```
-Only authenticated users can use the API services, for that reason if we try this:
-```
-http  http://127.0.0.1:8000/api/v1/movies/
-```
-we get:
-```
-{
-    "detail": "Authentication credentials were not provided."
-}
-```
-Instead, if we try to access with credentials:
-```
-http http://127.0.0.1:8000/api/v1/movies/3 "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjE2MjA4Mjk1LCJqdGkiOiI4NGNhZmMzMmFiZDA0MDQ2YjZhMzFhZjJjMmRiNjUyYyIsInVzZXJfaWQiOjJ9.NJrs-sXnghAwcMsIWyCvE2RuGcQ3Hiu5p3vBmLkHSvM"
-```
-we get the movie with id = 3
-```
-{  "title":  "Avengers",  "genre":  "Superheroes",  "year":  2012,  "creator":  "admin"  }
 ```
 
 ## Create users and Tokens
