@@ -1,0 +1,32 @@
+[
+{
+    "model": "authentication.customer",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "bio": "abc",
+        "birth_date": "2023-05-13",
+        "address": "HCM"
+    }
+},
+{
+    "model": "authentication.customer",
+    "pk": 2,
+    "fields": {
+        "user": 3,
+        "bio": "abc",
+        "birth_date": "2023-05-13",
+        "address": "HCM"
+    }
+},
+{
+    "model": "authentication.customer",
+    "pk": 3,
+    "fields": {
+        "user": 2,
+        "bio": "abc",
+        "birth_date": "2023-05-13",
+        "address": "HCM"
+    }
+}
+]

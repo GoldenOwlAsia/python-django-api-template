@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -54,7 +55,6 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_filters',
     'authentication',
-    'movies',
 ]
 
 SIMPLE_JWT = {
@@ -147,3 +147,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Celery Configuration Options
+CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+BROKER_URL = os.getenv('BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERYBEAT_SCHEDULE = {
+    'run_every_monday_morning': {
+        'task': 'run_every_monday_morning',
+        'schedule': crontab(hour=7, minute=30, day_of_week=1),
+        'args': (1,2,)
+    },
+}

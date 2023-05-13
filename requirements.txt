@@ -9,3 +9,6 @@ psycopg2==2.9.6
 python-dotenv==1.0.0
 black==23.3.0
 drf-yasg==1.21.5
+django-celery==3.3.1
+django-celery-beat==2.5.0
+redis==4.5.5
