@@ -1,5 +1,5 @@
 ## Requirements
-- Python 3.8.10
+- Python 3.12.10
 - Django 4.2
 - Django REST Framework
 
@@ -27,7 +27,14 @@ Run server.
 ```
 python manage.py runserver
 ```
-
+Run redis server.
+```
+redis-server
+```
+Run celery.
+```
+celery -A api worker -l INFO
+```
 ## Create users and Tokens
 
 First we need to create a user, so we can log in
@@ -73,6 +80,10 @@ Visit `http://127.0.0.1:8000/swagger/` to check API document.
 ## Load seed data
 
 `python manage.py loaddata authentication/fixtures/customer.json --app authentication.customer`
+
+## Run docker
+
+`docker compose up`
 
 ## Database diagram
 

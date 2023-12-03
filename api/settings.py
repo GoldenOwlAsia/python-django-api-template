@@ -54,7 +54,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_yasg',
     'django_filters',
-    'authentication',
+    'django_celery_results',
+    'django_celery_beat',
+    'authentication'
 ]
 
 SIMPLE_JWT = {
@@ -147,13 +149,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
 # Celery Configuration Options
 CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 BROKER_URL = os.getenv('BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
+CELERY_CACHE_BACKEND = os.getenv('CELERY_CACHE_BACKEND', 'redis://localhost:6379/2')
 CELERYBEAT_SCHEDULE = {
     'run_every_monday_morning': {
         'task': 'run_every_monday_morning',
