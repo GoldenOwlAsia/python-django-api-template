@@ -44,4 +44,5 @@ db.sqlite3
 sqlite.db
 
 static_root
+static
 dump.rdb

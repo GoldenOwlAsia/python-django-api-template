@@ -3,7 +3,7 @@
 - Django 4.2
 - Django REST Framework
 
-## Installation
+## Install and run locally from a virtual environment
 After you cloned the repository, you want to create a virtual environment, so you have a clean python installation.
 You can do this by running the command
 ```
@@ -14,7 +14,7 @@ After this, it is necessary to activate the virtual environment, you can get mor
 
 You can install all the required dependencies by running
 ```
-pip install -r requirements.txt
+pip install -r requirements/dev.txt
 ```
 
 ## Start and Use
@@ -39,7 +39,7 @@ celery -A api worker -l INFO
 
 First we need to create a user, so we can log in
 ```
-http POST http://127.0.0.1:8000/api/v1/auth/register/ email="email@email.com" username="USERNAME" password1="PASSWORD" password2="PASSWORD"
+http POST http://127.0.0.1:8000/api/v1/auth/register/ email="email@email.com" username="USERNAME" password="PASSWORD"
 ```
 
 After we create an account we can use those credentials to get a token

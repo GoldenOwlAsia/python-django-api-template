@@ -12,14 +12,14 @@ services:
             - 8000:8000
         environment:
             - SECRET_KEY=${SECRET_KEY}
-            - DJANGO_SETTINGS_MODULE=api.settings.dev
+            - DJANGO_SETTINGS_MODULE=api.settings.prod
         depends_on:
             - db
     db:
         image: postgres:14-alpine
         environment:
-            - POSTGRES_USER=${DB_DEV_USER}
-            - POSTGRES_PASSWORD=${DB_DEV_PASSWORD}
-            - POSTGRES_DB=${DB_DEV_NAME}
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_DB=${DB_NAME}
         ports:
             - 5432:5432
