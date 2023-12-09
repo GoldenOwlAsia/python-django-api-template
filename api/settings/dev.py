@@ -2,7 +2,7 @@ from .base import *
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', True)
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
@@ -19,3 +19,16 @@ DATABASES = {
         'PORT': os.getenv('DB_DEV_PORT', '5432'),
     }
 }
+
+if DEBUG:
+    try:
+        import debug_toolbar  # NOQA
+    except ImportError:
+        pass
+    else:
+        INSTALLED_APPS.append("debug_toolbar")
+        INTERNAL_IPS = ["127.0.0.1"]
+        MIDDLEWARE.insert(
+            MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
+            "debug_toolbar.middleware.DebugToolbarMiddleware",
+        )

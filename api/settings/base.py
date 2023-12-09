@@ -131,6 +131,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Swagger
+EMAIL_CONTACT = "contact@snippets.local"
+LICENSE = "python-django-api-template License"
+
 # Celery Configuration Options
 CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
 CELERY_TASK_TRACK_STARTED = True

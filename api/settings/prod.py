@@ -2,7 +2,7 @@ from .base import *
 
 ALLOWED_HOSTS = []
 
-DEBUG = False
+DEBUG = os.getenv('DEBUG', False)
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
