@@ -1,4 +1,4 @@
-from api.celery import Celery
+from django_template.celery import Celery
 
 app = Celery('tasks',)
 
