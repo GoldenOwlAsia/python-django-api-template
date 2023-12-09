@@ -1,4 +1,6 @@
 from .base import *
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 ALLOWED_HOSTS = []
 
@@ -19,3 +21,17 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
+# Sentry
+sentry_sdk.init(
+    dsn=os.getenv('SENTRY_DNS'),
+    enable_tracing=True,
+    integrations=[
+        DjangoIntegration(
+            transaction_style='url',
+            middleware_spans=True,
+            signals_spans=False,
+            cache_spans=False,
+        ),
+    ],
+)

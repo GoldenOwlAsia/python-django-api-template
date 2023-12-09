@@ -5,8 +5,8 @@ FROM python:3.12-alpine
 WORKDIR /usr/src/app
 
 # install python dependencies
-COPY ./requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY ./requirements ./requirements
+RUN pip install --no-cache-dir -r requirements/dev.txt
 
 # copy docker-entrypoint.sh
 COPY ./docker-entrypoint.sh ./docker-entrypoint.sh
@@ -15,6 +15,3 @@ COPY ./docker-entrypoint.sh ./docker-entrypoint.sh
 COPY . .
 
 RUN ["chmod", "+x", "./docker-entrypoint.sh"]
-
-# run docker-entrypoint.sh
-ENTRYPOINT ["./docker-entrypoint.sh"]

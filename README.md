@@ -1,7 +1,7 @@
 # python-django-api-template
 
 ## Overview
-The python-django-api-template serves as the boilerplate for constructing a Django project.
+The python-django-api-template serves as the boilerplate for constructing a Django project. :goat: :goat: :goat:
 ## Requirements
 - Python 3.12.10
 - Django 4.2

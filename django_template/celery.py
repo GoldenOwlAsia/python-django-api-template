@@ -4,9 +4,9 @@ from celery import Celery
 from django.conf import settings
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_template.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_template.settings.dev')
 
-app = Celery('api', backend=settings.CELERY_RESULT_BACKEND, broker=settings.BROKER_URL)
+app = Celery('django_template', backend=settings.CELERY_RESULT_BACKEND, broker=settings.BROKER_URL)
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
