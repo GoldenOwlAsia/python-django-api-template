@@ -5,7 +5,7 @@ services:
         build:
             context: ./
             dockerfile: Dockerfile
-        command: python manage.py runserver 0.0.0.0:8000
+        command: ./docker-entrypoint.sh -- python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/usr/src/app/
         ports:
@@ -17,9 +17,47 @@ services:
             - db
     db:
         image: postgres:14-alpine
+        volumes:
+          - django_template_db:/var/lib/postgresql/data
         environment:
             - POSTGRES_USER=${DB_USER}
             - POSTGRES_PASSWORD=${DB_PASSWORD}
             - POSTGRES_DB=${DB_NAME}
         ports:
             - 5432:5432
+    redis:
+        image: redis:7.2.3-alpine
+        volumes:
+            - ./tmp/redis/data:/data
+        ports:
+            - 6379:6379
+    worker:
+        build: ./
+        entrypoint: celery
+        command: -A django_template worker --beat --scheduler django -l info -E
+        volumes:
+            - .:/app
+        environment:
+            - BROKER_URL=${BROKER_URL}
+            - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+            - CELERY_CACHE_BACKEND=${CELERY_CACHE_BACKEND}
+        depends_on:
+            - db
+            - redis
+    flower:
+        build: ./
+        command: celery -A django_template flower
+        volumes:
+            - .:/data
+        working_dir: /data
+        ports:
+            - 5555:5555
+        environment:
+            - BROKER_URL=${BROKER_URL}
+            - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+        depends_on:
+            - worker
+            - redis
+
+volumes:
+    django_template_db:
