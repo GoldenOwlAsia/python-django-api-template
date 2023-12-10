@@ -42,7 +42,8 @@ venv.bak/
 # Database
 db.sqlite3
 sqlite.db
+dump.rdb
 
+# static folder
 static_root
 static
-dump.rdb
