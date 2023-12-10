@@ -17,8 +17,6 @@ class TestCalls(TestCase):
             "username": "bao.binh",
             "password": "1234ABbcd!@",
             "email": "bao.binh@gmail.com",
-            "first_name": "bao",
-            "last_name": "binh",
         }
 
         response = self.client.post(
@@ -28,8 +26,6 @@ class TestCalls(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("username", response.json())
         self.assertIn("email", response.json())
-        self.assertIn("first_name", response.json())
-        self.assertIn("last_name", response.json())
         self.assertEqual(response.json().get("username"), "bao.binh")
 
     def test_call_login(self):

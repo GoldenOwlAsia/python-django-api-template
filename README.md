@@ -11,37 +11,41 @@ The python-django-api-template serves as the boilerplate for constructing a Djan
 After cloning the repository, you'll want to create a virtual environment to ensure a clean Python installation.
 
 You can achieve this by executing the following command.
-```
+```sh
 python -m venv env
 ```
 
 After this, it is necessary to activate the virtual environment, you can get more information about this [here](https://docs.python.org/3/tutorial/venv.html)
 
 You can install all the required dependencies by running
-```
+```sh
 pip install -r requirements/dev.txt
 ```
 
 ## Start and Use
 Run migration
-```
+```sh
 python manage.py makemigrations
 python manage.py migrate
 ```
+
 Run server.
-```
+```sh
 python manage.py runserver
 ```
+
 Run redis server.
-```
+```sh
 redis-server
 ```
+
 Run celery and celery beat.
-```
+```sh
 celery -A django_template worker --beat --scheduler django -l info -E
 ```
+
 Run celery flower
-```
+```sh
 celery -A django_template flower
 ```
 ## Create users and Tokens
@@ -98,21 +102,36 @@ and we will get a new access token
 
 Visit `http://127.0.0.1:8000/swagger/` to check API document.
 
-## Run unitest
+## Run unit test
 
-`python manage.py test`
+```sh
+python manage.py test
+```
+
+## Generate coverage report
+
+```sh
+coverage run --source='.' manage.py test
+coverage html
+```
 
 ## Load fixture data
 
-`python manage.py loaddata authentication/fixtures/customer.json --app authentication.customer`
+```sh
+python manage.py loaddata authentication/fixtures/customer.json --app authentication.customer
+```
 
 ## Run docker
 
-`docker compose up`
+```sh
+docker compose up
+```
 
 ## Clean expired token
 
-`python manage.py flushexpiredtokens`
+```sh
+python manage.py flushexpiredtokens
+```
 
 ## Database diagram
 
