@@ -36,9 +36,13 @@ Run redis server.
 ```
 redis-server
 ```
-Run celery.
+Run celery and celery beat.
 ```
-celery -A api worker -l INFO
+celery -A django_template worker --beat --scheduler django -l info -E
+```
+Run celery flower
+```
+celery -A django_template flower
 ```
 ## Create users and Tokens
 
