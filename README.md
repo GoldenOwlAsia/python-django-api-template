@@ -98,7 +98,7 @@ Visit `http://127.0.0.1:8000/swagger/` to check API document.
 
 `python manage.py test`
 
-## Load seed data
+## Load fixture data
 
 `python manage.py loaddata authentication/fixtures/customer.json --app authentication.customer`
 
