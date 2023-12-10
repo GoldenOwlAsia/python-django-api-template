@@ -38,6 +38,9 @@ jobs:
         run: |
           PGPASSWORD="postgres" createuser -U postgres -d django_template --superuser -h localhost
           PGPASSWORD="postgres" createdb -U postgres -O django_template django_template -h localhost
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Migrate database
         run: |
           python manage.py migrate
