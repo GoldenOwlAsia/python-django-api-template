@@ -106,6 +106,10 @@ Visit `http://127.0.0.1:8000/swagger/` to check API document.
 
 `docker compose up`
 
+## Clean expired token
+
+`python manage.py flushexpiredtokens`
+
 ## Database diagram
 
 ![Database diagram](db_diagram.png)

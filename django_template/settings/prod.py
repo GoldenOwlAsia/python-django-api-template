@@ -15,7 +15,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME", "baron"),
+        "NAME": os.getenv("DB_NAME", "prod_db"),
         "USER": os.getenv("DB_USER", "postgres"),
         "PASSWORD": os.getenv("DB_PASSWORD", ""),
         "HOST": os.getenv("DB_HOST", "127.0.0.1"),
