@@ -47,3 +47,5 @@ dump.rdb
 # static folder
 static_root
 static
+
+.DS_Store

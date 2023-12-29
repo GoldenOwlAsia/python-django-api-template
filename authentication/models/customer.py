@@ -6,7 +6,7 @@ from django.db import models
 class Customer(User):
     bio = models.TextField(verbose_name="Bio info", max_length=500, blank=True)
     birth_date = models.DateField(verbose_name="Birth date", null=True, blank=True)
-    address = models.CharField(verbose_name="Address", max_length=30, blank=True)
+    address = models.CharField(verbose_name="Address", max_length=200, blank=True)
 
     class Meta:
         db_table = "customer"
