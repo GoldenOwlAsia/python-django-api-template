@@ -3,8 +3,8 @@
 ## Overview
 The python-django-api-template serves as the boilerplate for constructing a Django project. :goat: :goat: :goat:
 ## Requirements
-- Python 3.12.10
-- Django 4.2
+- Python 3.12.6
+- Django 5.1.1
 - Django REST Framework
 
 ## Install and run locally from a virtual environment

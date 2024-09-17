@@ -1,2 +1,2 @@
 -r  base.txt
-sentry-sdk==1.38.0
+sentry-sdk==2.14.0
