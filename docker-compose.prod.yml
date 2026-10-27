@@ -5,16 +5,27 @@ services:
         build:
             context: ./
             dockerfile: Dockerfile
-        command: ./docker-entrypoint.sh -- python manage.py runserver 0.0.0.0:8000
-        volumes:
-            - .:/usr/src/app/
+            args:
+                REQUIREMENTS: prod
+        command: ./docker-entrypoint.sh -- gunicorn django_template.wsgi:application --bind 0.0.0.0:8000 --workers 3
         ports:
             - 8000:8000
+        env_file:
+            - .env
         environment:
-            - SECRET_KEY=${SECRET_KEY}
             - DJANGO_SETTINGS_MODULE=django_template.settings.prod
+            - BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/1
+            - CELERY_CACHE_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/2
         depends_on:
             - db
+        healthcheck:
+            # gunicorn only listens after docker-entrypoint.sh has migrated
+            test: ["CMD", "nc", "-z", "127.0.0.1", "8000"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 300s
     db:
         image: postgres:14-alpine
         volumes:
@@ -23,38 +34,45 @@ services:
             - POSTGRES_USER=${DB_USER}
             - POSTGRES_PASSWORD=${DB_PASSWORD}
             - POSTGRES_DB=${DB_NAME}
-        ports:
-            - 5432:5432
     redis:
-        image: redis:7.2.3-alpine
+        image: redis:8.10.3-alpine
+        command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}"]
         volumes:
             - ./tmp/redis/data:/data
-        ports:
-            - 6379:6379
     worker:
-        build: ./
+        build:
+            context: ./
+            args:
+                REQUIREMENTS: prod
         entrypoint: celery
         command: -A django_template worker --beat --scheduler django -l info -E
-        volumes:
-            - .:/app
+        env_file:
+            - .env
         environment:
-            - BROKER_URL=${BROKER_URL}
-            - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
-            - CELERY_CACHE_BACKEND=${CELERY_CACHE_BACKEND}
+            - DJANGO_SETTINGS_MODULE=django_template.settings.prod
+            - BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/1
+            - CELERY_CACHE_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/2
         depends_on:
-            - db
-            - redis
+            redis:
+                condition: service_started
+            web:
+                condition: service_healthy
     flower:
-        build: ./
+        build:
+            context: ./
+            args:
+                REQUIREMENTS: prod
         command: celery -A django_template flower
-        volumes:
-            - .:/data
-        working_dir: /data
         ports:
-            - 5555:5555
+            - 127.0.0.1:5555:5555
+        env_file:
+            - .env
         environment:
-            - BROKER_URL=${BROKER_URL}
-            - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+            - DJANGO_SETTINGS_MODULE=django_template.settings.prod
+            - BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/1
+            - CELERY_CACHE_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/2
         depends_on:
             - worker
             - redis

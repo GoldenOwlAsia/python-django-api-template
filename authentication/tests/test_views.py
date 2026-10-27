@@ -58,3 +58,18 @@ class TestCalls(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("access", response.json())
+
+    def test_call_refresh_token_of_deleted_user(self):
+        user = User.objects.create_user(
+            username=fake.profile()["username"], password=fake.password()
+        )
+        refresh = RefreshToken.for_user(user)
+        user.delete()
+
+        response = self.client.post(
+            "/api/v1/auth/token/refresh/",
+            {"refresh": str(refresh)},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 401)

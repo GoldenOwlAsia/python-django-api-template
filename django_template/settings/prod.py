@@ -3,11 +3,19 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 from .base import *
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    h.strip() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()
+]
 
-DEBUG = os.getenv("DEBUG", False)
+DEBUG = False
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# Serve collected static files from gunicorn
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+)
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -25,8 +33,8 @@ DATABASES = {
 
 # Sentry
 sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DNS"),
-    enable_tracing=True,
+    dsn=os.getenv("SENTRY_DSN"),
+    traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE") or 1.0),
     integrations=[
         DjangoIntegration(
             transaction_style="url",
@@ -47,26 +55,17 @@ LOGGING = {
             'datefmt': "%d/%b/%Y %H:%M:%S"
         },
     },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
     'handlers': {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
-        'sentry': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'raven.contrib.django.handlers.SentryHandler',
-        },
     },
+    # Errors reach Sentry through sentry_sdk's LoggingIntegration (on by default).
     'loggers': {
         'django': {
-            'handlers': ['console', 'sentry'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'INFO',
         },

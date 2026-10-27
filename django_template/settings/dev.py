@@ -2,7 +2,7 @@ from .base import *
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-DEBUG = os.getenv("DEBUG", True)
+DEBUG = env_bool("DEBUG", True)
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
 

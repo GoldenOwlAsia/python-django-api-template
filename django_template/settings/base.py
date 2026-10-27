@@ -17,6 +17,15 @@ from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if not value:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -64,6 +73,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(
         days=int(os.getenv("REFRESH_TOKEN_LIFETIME", 1))
     ),
+    "TOKEN_REFRESH_SERIALIZER": "authentication.serializers.TokenRefreshSerializer",
 }
 
 SITE_ID = 1
@@ -125,8 +135,6 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 

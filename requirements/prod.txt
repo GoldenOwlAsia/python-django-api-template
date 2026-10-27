@@ -1,2 +1,4 @@
 -r  base.txt
 sentry-sdk==2.14.0
+gunicorn==26.2.0
+whitenoise==6.12.0

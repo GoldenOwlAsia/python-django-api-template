@@ -3,8 +3,8 @@
 ## Overview
 The python-django-api-template serves as the boilerplate for constructing a Django project. :goat: :goat: :goat:
 ## Requirements
-- Python 3.12.6
-- Django 5.1.1
+- Python 3.12
+- Django 5.2 (LTS)
 - Django REST Framework
 
 ## Install and run locally from a virtual environment
@@ -125,6 +125,12 @@ python manage.py loaddata authentication/fixtures/customer.json --app authentica
 
 ```sh
 docker compose up
+```
+
+For production, set `ALLOWED_HOSTS`, the `DB_*` variables (with `DB_HOST=db`) and `REDIS_PASSWORD` (e.g. `openssl rand -hex 32`) in `.env`, then run
+
+```sh
+docker compose -f docker-compose.prod.yml up --build -d
 ```
 
 ## Clean expired token
