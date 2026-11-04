@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/python manage.py test)",
+      "Bash(.venv/bin/python manage.py test *)",
+      "Bash(DB_DEV_HOST=127.0.0.1 .venv/bin/python manage.py test)",
+      "Bash(DB_DEV_HOST=127.0.0.1 .venv/bin/python manage.py test *)",
+      "Bash(.venv/bin/python manage.py check)",
+      "Bash(.venv/bin/python manage.py check *)",
+      "Bash(.venv/bin/python manage.py makemigrations --check *)",
+      "Bash(.venv/bin/python manage.py showmigrations)",
+      "Bash(.venv/bin/python manage.py showmigrations *)",
+      "Bash(.venv/bin/python manage.py sqlmigrate *)",
+      "Bash(.venv/bin/flake8 *)",
+      "Bash(.venv/bin/black *)",
+      "Bash(.venv/bin/isort *)",
+      "Bash(.venv/bin/coverage run --source='.' manage.py test)",
+      "Bash(.venv/bin/coverage run --source='.' manage.py test *)",
+      "Bash(.venv/bin/coverage run --source=. manage.py test)",
+      "Bash(.venv/bin/coverage run --source=. manage.py test *)",
+      "Bash(DB_DEV_HOST=127.0.0.1 .venv/bin/coverage run --source='.' manage.py test *)",
+      "Bash(.venv/bin/coverage report)",
+      "Bash(.venv/bin/coverage report *)",
+      "Bash(.venv/bin/coverage html)",
+      "Bash(.venv/bin/coverage erase)",
+      "Bash(docker compose ps)",
+      "Bash(docker compose ps *)",
+      "Bash(docker compose logs *)",
+      "Bash(lsof +c 0 -nP -iTCP:5432 -iTCP:6379 -sTCP:LISTEN)",
+      "Bash(ss -ltn 'sport = :5432 or sport = :6379')",
+      "Bash(lsof +c 0 -nP -iTCP:8000 -sTCP:LISTEN)",
+      "Bash(ss -ltn 'sport = :8000')",
+      "Bash(docker compose up -d db redis)",
+      "Bash(python3 -m unittest discover -s .claude/hooks)"
+    ],
+    "ask": [
+      "Bash(.venv/bin/python manage.py migrate)",
+      "Bash(.venv/bin/python manage.py migrate *)",
+      "Bash(.venv/bin/python manage.py shell *)",
+      "Bash(.venv/bin/python manage.py dbshell *)",
+      "Bash(.venv/bin/python manage.py loaddata *)",
+      "Bash(.venv/bin/python manage.py createsuperuser *)",
+      "Bash(.venv/bin/pip install *)",
+      "Bash(uv pip install *)",
+      "Bash(docker compose down *)",
+      "Bash(docker compose -f docker-compose.prod.yml *)",
+      "Bash(git push *)",
+      "Edit(/docker-compose.prod.yml)",
+      "Edit(/docker-entrypoint.sh)",
+      "Edit(/django_template/settings/prod.py)",
+      "Edit(/requirements/**)",
+      "Edit(/.github/workflows/**)",
+      "Edit(/.claude/**)",
+      "Edit(/.mcp.json)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(!.env.example)",
+      "Read(!.env.sample)",
+      "Read(!.env.template)",
+      "Edit(.env)",
+      "Read(/tmp/**)",
+      "Bash(.venv/bin/python manage.py flush)",
+      "Bash(.venv/bin/python manage.py flush *)",
+      "Bash(python manage.py flush)",
+      "Bash(python manage.py flush *)",
+      "Bash(.venv/bin/python manage.py diffsettings)",
+      "Bash(.venv/bin/python manage.py diffsettings *)",
+      "Bash(python manage.py diffsettings)",
+      "Bash(python manage.py diffsettings *)",
+      "Bash(docker compose down -v)",
+      "Bash(docker compose down -v *)",
+      "Bash(docker compose down --volumes)",
+      "Bash(docker compose down --volumes *)",
+      "Bash(docker volume rm *)",
+      "Bash(docker volume prune)",
+      "Bash(docker volume prune *)",
+      "Bash(docker compose config)",
+      "Bash(docker compose config *)",
+      "Bash(git push --force)",
+      "Bash(git push --force *)",
+      "Bash(git push -f)",
+      "Bash(git push -f *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_bash.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

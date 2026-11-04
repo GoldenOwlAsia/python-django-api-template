@@ -1,4 +1,6 @@
-.env
+**/.env
+**/.env.*
+!.env.example
 .git
 .github
 **/__pycache__
@@ -10,3 +12,10 @@ static_root/
 tmp/
 .coverage
 htmlcov/
+
+# AI agent config is not needed in the image
+.claude/
+.agents/
+.mcp.json
+AGENTS.md
+**/AGENTS.md

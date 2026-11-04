@@ -49,3 +49,14 @@ static_root
 static
 
 .DS_Store
+
+# AI agents: personal files, never commit
+CLAUDE.local.md
+AGENTS.override.md
+.claude/settings.local.json
+# Local env files (.env.<name>): the agent guard treats them as secrets.
+# Templates (.env.example/.sample/.template) stay committable.
+.env.*
+!.env.example
+!.env.sample
+!.env.template

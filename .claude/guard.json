@@ -1,0 +1,100 @@
+{
+  "_comment": "Repo-specific rules for .claude/hooks/guard_bash.py. Patterns match one simple command from the program name on. Add a case under tests for every rule change, then run: python3 -m unittest discover -s .claude/hooks",
+  "secret_paths": [],
+  "block": [
+    {
+      "pattern": "(^|\\s|/)(manage\\.py|django-admin|-m\\s+django)\\s+(flush|sqlflush)(\\s|$)",
+      "reason": "`manage.py flush` deletes every row in the database."
+    },
+    {
+      "pattern": "(^|\\s|/)(manage\\.py|django-admin|-m\\s+django)\\s+diffsettings(\\s|$)",
+      "reason": "`manage.py diffsettings` prints SECRET_KEY and the database and Redis passwords."
+    },
+    {
+      "pattern": "(^|\\s|/)(manage\\.py|django-admin|-m\\s+django)\\s+migrate\\s+(\\S+\\s+)*zero(\\s|$)",
+      "reason": "`migrate <app> zero` unapplies every migration of the app and drops its tables."
+    },
+    {
+      "pattern": "(^|\\s|/)(manage\\.py|django-admin|-m\\s+django)\\s+shell\\s(.*\\s)?(-c|--command)(=|\\s)\\S*(SECRET_KEY|PASSWORD(?!_(VALIDATORS|HASHERS|RESET_TIMEOUT))|DATABASES|CACHES|BROKER_URL|CELERY_\\w*BACKEND|settings_dict|connection_params|environ\\b(?!\\.(setdefault|get|pop|update)\\b|\\[))",
+      "reason": "Django settings and os.environ hold SECRET_KEY and the database and Redis passwords from .env (settings/base.py calls load_dotenv()). Read the value in django_template/settings/ instead, or print only the non-secret key you need."
+    },
+    {
+      "pattern": "(^|\\s|/)python[\\d.]*\\s(.*\\s)?-c\\s(?=\\S*django)\\S*(SECRET_KEY|PASSWORD(?!_(VALIDATORS|HASHERS|RESET_TIMEOUT))|DATABASES|CACHES|BROKER_URL|CELERY_\\w*BACKEND|settings_dict|connection_params|environ\\b(?!\\.(setdefault|get|pop|update)\\b|\\[))",
+      "reason": "Django settings and os.environ hold SECRET_KEY and the database and Redis passwords from .env (settings/base.py calls load_dotenv()). Read the value in django_template/settings/ instead, or print only the non-secret key you need."
+    },
+    {
+      "pattern": "^(\\S*/)?rm\\s(.*\\s)?(\\S*tmp/redis|(\\./)?tmp(/\\S*)?(\\s|$))",
+      "reason": "tmp/ holds the dev Redis data (tmp/redis is bind-mounted in docker-compose.yml)."
+    }
+  ],
+  "ask": [
+    {
+      "pattern": "(^|\\s|/)manage\\.py\\s+dbshell(\\s|$)",
+      "reason": "`manage.py dbshell` opens a shell on the database."
+    }
+  ],
+  "env": [],
+  "tests": {
+    "block": [
+      ".venv/bin/python manage.py flush",
+      "python manage.py flush --no-input",
+      ".venv/bin/django-admin flush --settings=django_template.settings.dev",
+      ".venv/bin/python -m django flush",
+      "docker compose exec web python manage.py flush",
+      "sh -c 'python manage.py sqlflush'",
+      ".venv/bin/coverage run manage.py flush",
+      ".venv/bin/python manage.py diffsettings",
+      ".venv/bin/python manage.py migrate authentication zero",
+      ".venv/bin/python manage.py migrate --database default authentication zero",
+      ".venv/bin/python manage.py shell -c \"from django.conf import settings; print(settings.SECRET_KEY)\"",
+      "DB_DEV_HOST=127.0.0.1 .venv/bin/python manage.py shell -c \"from django.conf import settings; print(settings.DATABASES)\"",
+      "rm -rf tmp/redis",
+      "rm -rf tmp",
+      "rm -rf ./tmp/*",
+      "docker compose -f docker-compose.prod.yml down -v",
+      "docker compose -f docker-compose.prod.yml config",
+      ".venv/bin/python manage.py shell <<'EOF'\nfrom django.conf import settings\nprint(settings.SECRET_KEY)\nEOF",
+      "echo 'from django.conf import settings; print(settings.SECRET_KEY)' | .venv/bin/python manage.py shell",
+      ".venv/bin/python manage.py shell <<< 'from django.conf import settings; print(settings.DATABASES)'",
+      ".venv/bin/python manage.py \\\n  flush --noinput",
+      "uv run python manage.py flush",
+      ".venv/bin/python manage.py shell -c 'from django.conf import settings; print(settings.CELERY_CACHE_BACKEND)'",
+      ".venv/bin/python manage.py shell -c 'import os; print(os.environ)'",
+      "DJANGO_SETTINGS_MODULE=django_template.settings.dev .venv/bin/python -c 'from django.conf import settings; print(settings.DATABASES)'",
+      ".venv/bin/python - <<'EOF'\nimport os, django\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_template.settings.dev')\ndjango.setup()\nfrom django.conf import settings\nprint(settings.SECRET_KEY)\nEOF",
+      "uv run python -c 'import django; django.setup(); from django.conf import settings; print(settings.CACHES)'",
+      ".venv/bin/python -c 'from django_template.settings import dev; print(dev.SECRET_KEY)'",
+      "echo 'from django_template.settings import dev; print(dev.DATABASES)' | .venv/bin/python",
+      ".venv/bin/python -c 'import os, django_template; print(dict(os.environ))'",
+      ".venv/bin/python manage.py shell -c 'from django.db import connection; print(connection.settings_dict)'",
+      ".venv/bin/python manage.py shell -c 'from django.conf import settings; print(settings.DATABASES[\"default\"][\"PASSWORD\"])'"
+    ],
+    "ask": [
+      ".venv/bin/python manage.py dbshell"
+    ],
+    "allow": [
+      ".venv/bin/python manage.py test --noinput",
+      "DB_DEV_HOST=127.0.0.1 .venv/bin/python manage.py test --noinput --keepdb",
+      ".venv/bin/coverage run --source='.' manage.py test --noinput",
+      ".venv/bin/python manage.py migrate",
+      ".venv/bin/python manage.py migrate authentication 0002",
+      ".venv/bin/python manage.py makemigrations authentication --name zero_downtime_index",
+      ".venv/bin/python manage.py makemigrations --check --dry-run",
+      ".venv/bin/python manage.py shell -c \"from django.conf import settings; print(settings.INSTALLED_APPS)\"",
+      "git commit -m \"Remove manage.py flush from the entrypoint\"",
+      "grep -rn flush docker-entrypoint.sh",
+      "rm -rf /tmp/build",
+      "rm -rf tmpfile tmp_old build/tmp",
+      "docker compose up -d db redis",
+      "docker compose run --rm -T -e DB_DEV_HOST=db web sh -c 'pip install -r requirements/test.txt && python manage.py test --noinput'",
+      ".venv/bin/python manage.py test \\\n  --noinput --keepdb",
+      ".venv/bin/python manage.py shell <<'EOF'\nfrom authentication.models import Customer\nprint(Customer.objects.count())\nEOF",
+      ".venv/bin/python manage.py shell -c 'from django.conf import settings; print(settings.AUTH_PASSWORD_VALIDATORS)'",
+      ".venv/bin/python manage.py shell <<'EOF'\nfrom django.conf import settings\nprint(settings.PASSWORD_HASHERS)\nEOF",
+      "DJANGO_SETTINGS_MODULE=django_template.settings.dev .venv/bin/python -c 'from django.conf import settings; print(settings.INSTALLED_APPS)'",
+      ".venv/bin/python - <<'EOF'\nimport os, django\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_template.settings.dev')\ndjango.setup()\nfrom authentication.models import Customer\nprint(Customer.objects.count())\nEOF",
+      ".venv/bin/python manage.py shell -c 'import os; print(os.environ.get(\"DB_DEV_HOST\"))'",
+      ".venv/bin/python manage.py shell <<'EOF'\n# don't print SECRET_KEY, only DEBUG\nfrom django.conf import settings\nprint(settings.DEBUG)\nEOF"
+    ]
+  }
+}
