@@ -19,3 +19,13 @@ htmlcov/
 .mcp.json
 AGENTS.md
 **/AGENTS.md
+
+# Personal and other agents' files
+.codex/
+.cursor/
+CLAUDE.md
+**/CLAUDE.md
+**/CLAUDE.local.md
+**/AGENTS.override.md
+.envrc
+**/*.log
