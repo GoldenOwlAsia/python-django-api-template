@@ -1,11 +1,13 @@
-from faker import Faker
-from authentication.models import Customer
 import factory
+from faker import Faker
+
+from authentication.models import Customer
 
 fake = Faker()
 
+
 class CustomerFactory(factory.django.DjangoModelFactory):
-    username =  fake.profile()['username']
+    username = fake.profile()["username"]
     password = fake.password()
     email = fake.email()
     bio = fake.text()

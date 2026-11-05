@@ -9,55 +9,72 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 4
       matrix:
-        python-version: [3.12.x]
+        python-version: ["3.12"]
 
     services:
       postgres:
         image: postgres:14-alpine
         env:
+          POSTGRES_USER: django_template
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: django_template
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements/*.txt
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip -r requirements/test.txt
-      - name: Set up databases
-        run: |
-          PGPASSWORD="postgres" createuser -U postgres -d django_template --superuser -h localhost
-          PGPASSWORD="postgres" createdb -U postgres -O django_template django_template -h localhost
+          python -m pip install -r requirements/test.txt
       - name: Create .env file
+        # Throwaway values for this run only, so CI needs no repository secret.
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
+          cat > .env <<EOF
+          SECRET_KEY=$(python -c 'import secrets; print(secrets.token_urlsafe(50))')
+          DB_DEV_NAME=django_template
+          DB_DEV_USER=django_template
+          DB_DEV_PASSWORD=postgres
+          DB_DEV_HOST=127.0.0.1
+          DB_DEV_PORT=5432
+          EOF
+      - name: Check lint and formatting
+        run: |
+          flake8 .
+          black --check .
+          isort --check-only .
+      - name: Check project and migrations
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
       - name: Migrate database
         run: |
           python manage.py migrate
       - name: Collect static
         run: |
           python manage.py collectstatic --no-input --clear
-      - name: Load fixture
+      - name: Run unit tests and report coverage
         run: |
-          python manage.py loaddata authentication/fixtures/customer.json --app authentication.customer
-      - name: Check linter
-        run: |
-          flake8 .
-      - name: Format code
-        run: |
-          black .
-          isort .
-      - name: Run unit test and report coverage
-        run: |
-          coverage run --source='.' manage.py test
+          coverage run --source='.' manage.py test --noinput
           coverage report
+      - name: Test the agent guard hook
+        run: |
+          python -m unittest discover -s .claude/hooks

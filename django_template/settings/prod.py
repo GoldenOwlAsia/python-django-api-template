@@ -47,27 +47,27 @@ sentry_sdk.init(
 
 # Logging
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt': "%d/%b/%Y %H:%M:%S"
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard'
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
         },
     },
     # Errors reach Sentry through sentry_sdk's LoggingIntegration (on by default).
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level': 'INFO',
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "propagate": True,
+            "level": "INFO",
         },
-    }
+    },
 }

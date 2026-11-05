@@ -1,11 +1,10 @@
 from django.contrib.auth.models import User
-from authentication.factories.customer_factory import CustomerFactory
 from django.test import TestCase
-from rest_framework_simplejwt.tokens import RefreshToken
-from authentication.models import Customer
 from faker import Faker
+from rest_framework_simplejwt.tokens import RefreshToken
 
 fake = Faker()
+
 
 class TestCalls(TestCase):
     @classmethod
